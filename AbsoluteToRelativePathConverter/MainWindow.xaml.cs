@@ -42,6 +42,8 @@ namespace AbsoluteToRelativePathConverter
             }
 
             UpdateRelativePath();
+            ImmediatelyAfterBaseFolderChanged = true;
+
         }
 
 
@@ -101,15 +103,17 @@ namespace AbsoluteToRelativePathConverter
 
         private void BaseFolderPathComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e) {
             UpdateRelativePath();
+            ImmediatelyAfterBaseFolderChanged = true;
         }
 
 
         private string finalDirectoryForTargetPathSelectDialog = string.Empty;
+        private bool ImmediatelyAfterBaseFolderChanged = false;
 
         private void TargetPathInputAdditionalByFiles_Click(object sender, RoutedEventArgs e) {
             OpenFileDialog openFileDialog = new OpenFileDialog();
 
-            if((finalDirectoryForTargetPathSelectDialog.Length>0) && Directory.Exists(finalDirectoryForTargetPathSelectDialog)) {
+            if((!ImmediatelyAfterBaseFolderChanged) &&(finalDirectoryForTargetPathSelectDialog.Length>0) && Directory.Exists(finalDirectoryForTargetPathSelectDialog)) {
                 openFileDialog.DefaultDirectory = finalDirectoryForTargetPathSelectDialog;
             } else if (Directory.Exists(BaseFolderPathComboBox.Text)) {
                 openFileDialog.DefaultDirectory = BaseFolderPathComboBox.Text;
@@ -131,6 +135,7 @@ namespace AbsoluteToRelativePathConverter
 
                 TargetPathInputTextBox.AppendText(string.Join(Environment.NewLine, openFileDialog.FileNames));
                 finalDirectoryForTargetPathSelectDialog = GetParentDirectory(openFileDialog.FileName);
+                ImmediatelyAfterBaseFolderChanged = false;
             }
 
         }
@@ -138,7 +143,7 @@ namespace AbsoluteToRelativePathConverter
         private void TargetPathInputAdditionalByFolders_Click(object sender, RoutedEventArgs e) {
             OpenFolderDialog openFolderDialog = new OpenFolderDialog();
 
-            if ((finalDirectoryForTargetPathSelectDialog.Length > 0) && Directory.Exists(finalDirectoryForTargetPathSelectDialog)) {
+            if ((!ImmediatelyAfterBaseFolderChanged) &&(finalDirectoryForTargetPathSelectDialog.Length > 0) && Directory.Exists(finalDirectoryForTargetPathSelectDialog)) {
                 openFolderDialog.DefaultDirectory = finalDirectoryForTargetPathSelectDialog;
             } else if (Directory.Exists(BaseFolderPathComboBox.Text)) {
                 openFolderDialog.DefaultDirectory = BaseFolderPathComboBox.Text;
@@ -162,6 +167,7 @@ namespace AbsoluteToRelativePathConverter
                 TargetPathInputTextBox.AppendText(string.Join(Environment.NewLine, openFolderDialog.FolderNames));
 
                 finalDirectoryForTargetPathSelectDialog = GetParentDirectory(openFolderDialog.FolderName);
+                ImmediatelyAfterBaseFolderChanged = false;
 
             }
         }
